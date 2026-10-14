@@ -1,0 +1,35 @@
+# Render Blueprint: two separate sites from this one repository, sharing one Neon database.
+services:
+  - type: web
+    name: musikana-wishlist          # public donor site
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: APP_MODE
+        value: public
+      - key: DATABASE_URL
+        sync: false                  # paste your Neon connection string when prompted
+      - key: NOTIFY_EMAIL
+        value: charity@irenemusengi.co.zw   # pledge alerts go here (via FormSubmit, like a contact form)
+      - key: ADMIN_URL
+        sync: false                  # e.g. https://musikana-wishlist-admin.onrender.com
+
+  - type: web
+    name: musikana-wishlist-admin    # private admin dashboard, its own address
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    healthCheckPath: /healthz
+    envVars:
+      - key: APP_MODE
+        value: admin
+      - key: DATABASE_URL
+        sync: false                  # the same Neon connection string
+      - key: ADMIN_PASSWORD
+        sync: false
+      - key: PUBLIC_URL
+        sync: false                  # e.g. https://musikana-wishlist.onrender.com
